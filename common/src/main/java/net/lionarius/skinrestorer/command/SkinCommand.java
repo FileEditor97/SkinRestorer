@@ -7,6 +7,7 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.lionarius.skinrestorer.SkinRestorer;
 import net.lionarius.skinrestorer.skin.SkinValue;
 import net.lionarius.skinrestorer.skin.SkinVariant;
@@ -64,9 +65,12 @@ public final class SkinCommand {
     private static int refreshSubcommand(
             CommandSourceStack src
     ) {
-        var player = src.getPlayer();
-        if (player == null)
+        ServerPlayer player = null;
+        try {
+            player = src.getPlayerOrException();
+        } catch (CommandSyntaxException e) {
             return 0;
+        }
         
         var profile = player.getGameProfile();
         
@@ -115,10 +119,11 @@ public final class SkinCommand {
     private static int resetSubcommand(
             CommandSourceStack src
     ) {
-        if (src.getPlayer() == null)
+        try {
+            return resetSubcommand(src, Collections.singleton(src.getPlayerOrException().getGameProfile()), false);
+        } catch (CommandSyntaxException e) {
             return 0;
-        
-        return resetSubcommand(src, Collections.singleton(src.getPlayer().getGameProfile()), false);
+        }
     }
     
     private static int setSubcommand(
@@ -160,10 +165,11 @@ public final class SkinCommand {
             CommandSourceStack src,
             SkinProviderContext context
     ) {
-        if (src.getPlayer() == null)
+        try {
+            return setSubcommand(src, Collections.singleton(src.getPlayerOrException().getGameProfile()), context, false);
+        } catch (CommandSyntaxException e) {
             return 0;
-        
-        return setSubcommand(src, Collections.singleton(src.getPlayer().getGameProfile()), context, false);
+        }
     }
     
     private static int configReloadSubcommand(CommandContext<CommandSourceStack> context) {

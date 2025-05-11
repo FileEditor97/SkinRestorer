@@ -50,8 +50,7 @@ public class Java11RequestHandler extends RequestHandler {
         this.httpClient = clientBuilder.build();
     }
     
-    private <T, R extends MineSkinResponse<T>> R wrapResponse(HttpResponse<String> response, Class<T> clazz, ResponseConstructor<T, R> constructor)
-            throws IOException {
+    private <T, R extends MineSkinResponse<T>> R wrapResponse(HttpResponse<String> response, Class<T> clazz, ResponseConstructor<T, R> constructor) {
         String rawBody = response.body();
         try {
             JsonObject jsonBody = gson.fromJson(rawBody, JsonObject.class);
